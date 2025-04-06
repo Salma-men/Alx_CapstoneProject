@@ -1,14 +1,17 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import status
 from .serializers import RegisterSerializer
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+from .serializers import CustomUserSerializer
+from django.contrib.auth import get_user_model
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from .models import CustomUser
-from .serializers import RegisterSerializer
+
+User = get_user_model()
 
 class RegisterView(APIView):
     def post(self, request):
@@ -18,6 +21,11 @@ class RegisterView(APIView):
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class RegisterView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = CustomUserSerializer
 
 class LoginView(APIView):
     def post(self, request):
@@ -29,7 +37,12 @@ class LoginView(APIView):
             return Response({'token': token.key})
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-class RegisterView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    permission_classes = [AllowAny]
-    serializer_class = RegisterSerializer
+class LoginView(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        token = Token.objects.get(key=response.data['token'])
+        return Response({
+            'token': token.key,
+            'user_id': token.user_id,
+            'username': token.user.username
+        })

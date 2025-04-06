@@ -1,6 +1,6 @@
 from django.db import models
-from django.db import models
 from users.models import CustomUser
+
 
 class Habit(models.Model):
     DAILY = 'daily'
@@ -19,3 +19,15 @@ class Habit(models.Model):
 
     def __str__(self):
         return self.name
+
+class HabitTracking(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='habit_trackings')
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='trackings')
+    date = models.DateField(auto_now_add=True)
+    completed = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ['user', 'habit', 'date']  # Ensure one completion per day per habit
+
+    def __str__(self):
+        return f"{self.user.username} - {self.habit.name} on {self.date}"
