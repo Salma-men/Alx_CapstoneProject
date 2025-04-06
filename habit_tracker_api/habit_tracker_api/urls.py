@@ -26,5 +26,6 @@ urlpatterns = [
     path('api/habits/', include('habits.urls')),
     path('api/tracking/', include('tracking.urls')),   
     path('api/tracking/', include('tracking.urls')), 
+    path('api/social/', include('social.urls')),
 ]
 
