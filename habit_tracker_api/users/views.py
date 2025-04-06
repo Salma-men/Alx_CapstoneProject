@@ -5,6 +5,10 @@ from rest_framework import status
 from .serializers import RegisterSerializer
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from .models import CustomUser
+from .serializers import RegisterSerializer
 
 class RegisterView(APIView):
     def post(self, request):
@@ -24,3 +28,8 @@ class LoginView(APIView):
             token, _ = Token.objects.get_or_create(user=user)
             return Response({'token': token.key})
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class RegisterView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer
