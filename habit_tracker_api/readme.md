@@ -102,7 +102,7 @@ Ensure that you have the following tools installed:
 ## Testing the API with Postman
 
 ### 1. **Testing User Authentication**
-- **POST** to `http://127.0.0.1:8000/api/users/register/` with a JSON body containing:
+- **POST** to `api/users/register/` with a JSON body containing:
   ```json
   {
     "username": "your_username",
@@ -118,7 +118,8 @@ Ensure that you have the following tools installed:
   ```json
   {
     "name": "Drink Water",
-    "goal_type": "daily"
+    "description": "Drink 8 glasses of water",
+    "frequency": "daily"
   }
   ```
 - **GET** to `/api/habits/{habit_id}/`: Retrieve a specific habit by ID.
